@@ -6,6 +6,7 @@ import { PostScheduleValidation } from "../validation/scheduler.validation";
 import { and, desc, eq } from "drizzle-orm";
 
 export class Events {
+    // Get all data
   GETeventScheduler = async (req: Request, res: Response) => {
     try {
       const query = await db
