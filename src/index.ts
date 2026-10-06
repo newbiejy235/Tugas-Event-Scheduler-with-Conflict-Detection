@@ -5,7 +5,8 @@ const PORT = 5000
 
 app.use(express.json())
 
-app.use("/events", events)
+app.use("/api/v1/get", events)
+app.use("/api/v1/post", events)
 
 app.get("/", (req, res) => {
     res.send("hello")
