@@ -3,10 +3,11 @@ import { schedule } from "../config/schema";
 import { Request, Response } from "express";
 import { scheduleValidation } from "../validation/scheduler.validation";
 import { PostScheduleValidation } from "../validation/scheduler.validation";
-import { and, desc, eq } from "drizzle-orm";
+import { getScheduleSuggestion } from "../service/gemini.service";
+import { and, desc, eq, gt, lt } from "drizzle-orm";
 
 export class Events {
-    // Get all data
+  // Get all data
   GETeventScheduler = async (req: Request, res: Response) => {
     try {
       const query = await db
@@ -34,19 +35,32 @@ export class Events {
 
     try {
       const existingSchedule = await db
-        .select({ start: schedule.start_time, end: schedule.end_time })
+        .select()
         .from(schedule)
         .where(
           and(
-            eq(schedule.start_time, start_time),
-            eq(schedule.end_time, end_time),
+            lt(schedule.start_time, end_time),
+            gt(schedule.end_time, start_time),
           ),
-        ).limit(1);
+        )
+        .limit(1);
 
       if (existingSchedule.length > 0) {
+        const schedules = await db
+          .select({
+            start: schedule.start_time,
+            end: schedule.end_time,
+          })
+          .from(schedule);
+
+        const suggestion = await getScheduleSuggestion(
+          start_time,
+          end_time,
+          schedules,
+        );
         return res.status(409).json({
           success: false,
-          message: "jadwal sudah digunakan",
+          message: "jadwal bentrok",
         });
       }
 

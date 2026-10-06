@@ -4,7 +4,7 @@ import { integer, pgTable, varchar, timestamp } from "drizzle-orm/pg-core";
 export const schedule = pgTable("schedule", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   title: varchar({ length: 255 }).notNull(),
-  start_time: timestamp(),
-  end_time: timestamp(),
+  start_time: timestamp().notNull(),
+  end_time: timestamp().notNull(),
   participants : text().array()
 });
